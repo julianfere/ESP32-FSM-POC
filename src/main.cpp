@@ -54,9 +54,9 @@ void logTransition(String to)
   Serial.println("Transitioning to " + to);
 }
 
-State SETUP_SERVER_STATE = State("setupApServer", setupApServer);
-State CONNECT_TO_NETWORK_STATE = State("connectToLocalNetwork", connectToLocalNetwork);
-State LOG_AND_SLEEP_STATE = State("logAndSleep", logAndSleep);
+State SETUP_SERVER_STATE = State("Ap Server", setupApServer);
+State CONNECT_TO_NETWORK_STATE = State("Connect to Wifi", connectToLocalNetwork);
+State LOG_AND_SLEEP_STATE = State("Log and wait", logAndSleep);
 
 enum triggers
 {
