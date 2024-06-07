@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "ApServer.h"
+#include "Pages.h"
 
 class CaptiveRequestHandler : public AsyncWebHandler
 {
@@ -14,7 +15,7 @@ public:
 
   void handleRequest(AsyncWebServerRequest *request)
   {
-    request->send_P(200, "text/html", "<h1> Hello World!</h1>");
+    request->send_P(200, "text/html", CAPTIVE_PAGE);
   }
 };
 
@@ -26,7 +27,7 @@ ApServer::ApServer() : _dnsServer(), _server(80), networks(0), readyToConnect(fa
 
 bool ApServer::networkSelected()
 {
-  return readyToConnect && (ssid != "");
+  return this->readyToConnect && (this->ssid != "");
 }
 
 void ApServer::setupAp()
@@ -42,6 +43,45 @@ void ApServer::scanNetworks()
   networks = WiFi.scanNetworks();
 }
 
+void ApServer::setSsid(const String ssid)
+{
+  Serial.println(ssid);
+  ApServer::ssid = ssid;
+}
+
+void ApServer::setPassword(const String password)
+{
+  Serial.println(password);
+
+  this->password = password;
+}
+
+void ApServer::setReadyToConnect(bool readyToConnect)
+{
+  this->readyToConnect = readyToConnect;
+}
+
+void ApServer::handleHome(AsyncWebServerRequest *request)
+{
+  char html[2000];
+  strcpy(html, MAIN_PAGE_1);
+  String st = "";
+
+  for (int i = 0; i < this->networks; i++)
+  {
+    Serial.println(WiFi.SSID(i));
+    st += "<option ";
+    st += "value='" + WiFi.SSID(i) + "'";
+    st += " >";
+    st += WiFi.SSID(i);
+    st += "</option>";
+  };
+
+  strcat(html, st.c_str());
+  strcat(html, MAIN_PAGE_2);
+  request->send(200, "text/html", html);
+}
+
 void ApServer::setup()
 {
   setupAp();
@@ -50,17 +90,23 @@ void ApServer::setup()
 
   scanNetworks();
 
-  _server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
-             { request->send_P(200, "text/html", "<h1> Hello World!</h1>"); }); // Render a page with select input to choose a network
+  _server.on("/home", HTTP_GET, [this](AsyncWebServerRequest *request)
+             { this->handleHome(request); });
 
-  _server.on("/connect", HTTP_POST, [](AsyncWebServerRequest *request)
+  _server.on("/connect", HTTP_POST, [this](AsyncWebServerRequest *request)
              {
-              if (request->hasParam("ssid", true) && request->hasParam("password", true)) [&]{
-                ssid = request->getParam("ssid", true)->value();
-                password = request->getParam("password", true)->value();
-                readyToConnect = true;
-              };
-              request->send(200, "text/plain", "OK"); });
+    Serial.println("POST request received");
+    Serial.println(request->params());
+    if (request->hasParam("ssid", true) && request->hasParam("password", true))
+    {
+      Serial.println("SSID and password received");
+      this->setSsid(request->getParam("ssid", true)->value());
+      this->setPassword(request->getParam("password", true)->value());
+      this->setReadyToConnect(true);
+    };
+    request->send(200, "text/plain", "OK"); });
+
+  this->networks = WiFi.scanNetworks();
 
   _server.addHandler(new CaptiveRequestHandler()).setFilter(ON_AP_FILTER);
   _server.begin();

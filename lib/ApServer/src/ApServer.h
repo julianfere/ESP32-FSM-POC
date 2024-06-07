@@ -26,5 +26,9 @@ private:
   int networks;
   void setupAp();
   void scanNetworks();
+  void setSsid(String ssid);
+  void setPassword(String password);
+  void setReadyToConnect(bool readyToConnect);
+  void handleHome(AsyncWebServerRequest *request);
 };
 #endif
