@@ -18,45 +18,47 @@ void turnOff()
   analogWrite(PIN_BLUE, LOW);
 }
 
-void turnOn(String color)
+void turnOn(LedColors color)
 {
   int rgb[3] = {0, 0, 0};
 
-  if (color == "white")
+  switch (color)
   {
-    rgb[0] = WHITE[0];
-    rgb[1] = WHITE[1];
-    rgb[2] = WHITE[2];
-  }
-  else if (color == "red")
-  {
-    rgb[0] = RED[0];
-    rgb[1] = RED[1];
-    rgb[2] = RED[2];
-  }
-  else if (color == "green")
-  {
-    rgb[0] = GREEN[0];
-    rgb[1] = GREEN[1];
-    rgb[2] = GREEN[2];
-  }
-  else if (color == "blue")
-  {
-    rgb[0] = BLUE[0];
-    rgb[1] = BLUE[1];
-    rgb[2] = BLUE[2];
-  }
-  else if (color == "yellow")
-  {
-    rgb[0] = YELLOW[0];
-    rgb[1] = YELLOW[1];
-    rgb[2] = YELLOW[2];
-  }
-  else
-  {
-    rgb[0] = WHITE[0];
-    rgb[1] = WHITE[1];
-    rgb[2] = WHITE[2];
+  case LedColors::WHITE:
+    rgb[0] = WHITE_C[0];
+    rgb[1] = WHITE_C[1];
+    rgb[2] = WHITE_C[2];
+    break;
+  case LedColors::RED:
+    rgb[0] = RED_C[0];
+    rgb[1] = RED_C[1];
+    rgb[2] = RED_C[2];
+    break;
+  case LedColors::GREEN:
+    rgb[0] = GREEN_C[0];
+    rgb[1] = GREEN_C[1];
+    rgb[2] = GREEN_C[2];
+    break;
+  case LedColors::BLUE:
+    rgb[0] = BLUE_C[0];
+    rgb[1] = BLUE_C[1];
+    rgb[2] = BLUE_C[2];
+    break;
+  case LedColors::YELLOW:
+    rgb[0] = YELLOW_C[0];
+    rgb[1] = YELLOW_C[1];
+    rgb[2] = YELLOW_C[2];
+    break;
+  case LedColors::CYAN:
+    rgb[0] = CYAN_C[0];
+    rgb[1] = CYAN_C[1];
+    rgb[2] = CYAN_C[2];
+    break;
+  default:
+    rgb[0] = WHITE_C[0];
+    rgb[1] = WHITE_C[1];
+    rgb[2] = WHITE_C[2];
+    break;
   }
 
   analogWrite(PIN_RED, rgb[0]);
@@ -64,7 +66,7 @@ void turnOn(String color)
   analogWrite(PIN_BLUE, rgb[2]);
 }
 
-void blinkLed(String color)
+void blinkLed(LedColors color)
 {
   if (blink == 0)
   {
